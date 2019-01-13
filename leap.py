@@ -17,13 +17,38 @@ def on_message(ws, message):
 		gestures = result['gestures']
 		if len(gestures) > 0:
 			print(gestures[0]['type'])
-			# console.log("hello?")
 			# time.sleep(1)
-			k.type("QWERTY,     ")
-			k.type('Gesture type: ' + gestures[0]['type'])
-			k.press(Key.enter)
+			g = gestures[0]['type']
+			handle_gesture(g)
+			# k.type("QWERTY,     ")
+			# k.type('Gesture type: ' + g)
+			# k.press(Key.enter)
 
-
+def handle_gesture(g):
+	'''goal: check if in Overcooked app, 
+	so it won't be typing anywhere. 
+	'''
+	if False:
+		k.type("QWERTY \t")
+		k.type('Gesture type: ' + g)
+		k.press(Key.enter)
+	elif g == "circle":
+		k.type("CIRCLE \t")
+		k.type('Gesture type: ' + g)
+		k.press(Key.enter)
+	elif g == "keyTap":
+		k.type("KEYTAP \t")
+		k.type('Gesture type: ' + g)
+		k.press(Key.enter)
+	elif g == "swipe":
+		k.type("SWIPE \t")
+		k.type('Gesture type: ' + g)
+		k.press(Key.enter)
+	else:
+		k.type("NANII \t")
+		k.type('Gesture type: ' + g)
+		k.press(Key.enter)
+	
 
 def on_error(ws, error):
 	print(error)
