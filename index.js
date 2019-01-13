@@ -43,8 +43,10 @@ function init() {
 			var fingerTable = document.getElementById("fingerTable");
 			$("#fingerTable").find("tr:gt(0)").remove();
 
-			for(var i = 0; i < obj.pointables.length; i++) {
-				$("#fingerTable").append("<tr><td>" + i + "</td><td>" + obj.pointables[i].tipPosition[0].toFixed(0) + "</td><td>" + obj.pointables[i].tipPosition[1].toFixed(0) + "</td><td>" + obj.pointables[i].tipPosition[2].toFixed(0) + "</td></tr>");
+			for(var i = 0; i < obj.hands.length; i++) {
+				if(obj.hands[i].type == "left") {
+					$("#fingerTable").append("<tr><td>" + obj.hands[i].palmPosition[0].toFixed(0) + "</td><td>" + obj.hands[i].palmPosition[1].toFixed(0) + "</td><td>" + obj.hands[i].palmPosition[2].toFixed(0) + "</td><td>" + obj.hands[i].grabStrength + "</tr>");
+				}
 			}
 			
 			var str = JSON.stringify(obj, undefined, 2);
