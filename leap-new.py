@@ -6,14 +6,14 @@ except ImportError:
 	import _thread as thread
 
 # Global Variables
-gameStarted = False # denotes whether the game has started, no keypresses will occur until game is started
+gameStarted = True # denotes whether the game has started, no keypresses will occur until game is started
 grabThreshold = 0.5 # denotes what grab amount is required for the grab to occur
 isLeftGrabbed = False # denotes whether the left hand is currently being grabbed
 isRightGrabbed = False # denotes whether the right hand is currently being grabbed (used for items)
 leftCenterX = 0 # denotes the origin position in the X direction for the left hand
 leftCenterY = 0 # denotes the origin position in the Y direction for the left hand
 moveThreshold = 30 # denotes the distance away from the origin the left hand must be in order to move
-useEveryNthFrame = 20 # denotes how often a frame should be processed (ex: once every 10 frames)
+useEveryNthFrame = 1 # denotes how often a frame should be processed (ex: once every 10 frames)
 frameCounter = 0 # counter variable for frames
 
 def on_message(ws, message):
@@ -45,9 +45,9 @@ def on_message(ws, message):
 		if 'gestures' in result:
 			gestures = result['gestures']
 			if len(gestures) > 0 and rightHand:
-				if gestures[0]['handIds'][0] == rightHand['id']:
-					print("ctrlleft")
-					pyautogui.press('ctrlleft')
+				# if gestures[0]['handIds'][0] == rightHand['id']:
+				print("ctrlleft")
+				pyautogui.press('ctrlleft')
 
 		# Left Hand Grab Lookup
 		if leftHand:
@@ -56,13 +56,15 @@ def on_message(ws, message):
 
 				if gameStarted:
 					# Closing your hand after game start resets the calibration of the left hand movement control
-					leftCenterX = leftHand['palmPosition'][0]
-					leftCenterY = leftHand['palmPosition'][1]
+					leftCenterX = leftHand['stabilizedPalmPosition'][0]
+					leftCenterY = leftHand['stabilizedPalmPosition'][1]
 			else:
 				isLeftGrabbed = False
 
 		# Right Hand Grab Lookup
 		if rightHand:
+			# print(rightHand['grabStrength'])
+			# print(isRightGrabbed)
 			if not isRightGrabbed and rightHand['grabStrength'] >= grabThreshold:
 				# Right hand was previously not grabbed but is now above the grab threshold, process a change
 				isRightGrabbed = True
@@ -85,20 +87,20 @@ def on_message(ws, message):
 			if isLeftGrabbed and isRightGrabbed and not gameStarted:
 				print("Game Started")
 				gameStarted = True
-				leftCenterX = leftHand['palmPosition'][0]
-				leftCenterY = leftHand['palmPosition'][1]
+				leftCenterX = leftHand['stabilizedPalmPosition'][0]
+				leftCenterY = leftHand['stabilizedPalmPosition'][1]
 
 		# Left Hand Position Lookup
 		if leftHand and gameStarted:
-			print(leftHand['palmPosition'][0])
+			# print(leftHand['stabilizedPalmPosition'][0])
 			# print(leftCenterX)
-			if leftHand['palmPosition'][0] > (leftCenterX + moveThreshold):
+			if leftHand['stabilizedPalmPosition'][0] > (leftCenterX + moveThreshold):
 				# Positive X direction
 				# moveUp = True
 				print("up")
 				pyautogui.keyUp('down')
 				pyautogui.keyDown('up')
-			elif leftHand['palmPosition'][0] < (leftCenterX - moveThreshold):
+			elif leftHand['stabilizedPalmPosition'][0] < (leftCenterX - moveThreshold):
 				# Negative X direction
 				# moveDown = True
 				print("down")
@@ -108,13 +110,13 @@ def on_message(ws, message):
 				pyautogui.keyUp('up')
 				pyautogui.keyUp('down')
 
-			if leftHand['palmPosition'][1] > (leftCenterY + moveThreshold):
+			if leftHand['stabilizedPalmPosition'][1] > (leftCenterY + moveThreshold):
 				# Postive Y direction
 				# moveRight = True
 				print("right")
 				pyautogui.keyUp('left')
 				pyautogui.keyDown('right')
-			elif leftHand['palmPosition'][1] < (leftCenterX - moveThreshold):
+			elif leftHand['stabilizedPalmPosition'][1] < (leftCenterX - moveThreshold):
 				# Negative Y direction
 				# moveLeft = True
 				print("left")
